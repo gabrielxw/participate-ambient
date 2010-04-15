@@ -9,14 +9,8 @@
         </script>
         <style type="text/css">
             body {
-            	margin-left: 50px;
-                background: transparent repeat-x url(trial_grass.png);
-            }
-            
-            .flower {
-                width: 144px;
-                height: 144px;
-                background: transparent url(trial_flower.png) top left;
+            	height: 100%;
+				overflow: hidden;
             }
             
             #upButton {
@@ -26,12 +20,21 @@
                 height: 90px;
                 background: transparent url(trial_up.png) top right no-repeat;
             }
+			#bottomBar {
+				width: 100%;
+				height: 100px;
+				margin-left: 50px;
+				position: absolute;
+				bottom: 0;
+			}
         </style>
         <script type="text/javascript">
-            //this.nativeWindow.alwaysInFront = true; //makes window in front
+            
             
             $(function(){
-            
+			window.nativeWindow.alwaysInFront = true; //makes window in front
+            //window.nativeWindow.maximize();
+			window.nativeWindow.stage.displayState = runtime.flash.display.StageDisplayState.FULL_SCREEN;
                 $('.flower').sprite({
                     fps: 12,
                     no_of_frames: 2
@@ -42,51 +45,29 @@
                 $('#upButton').click(function(){
 					var test = $('<div></div>').attr("id", "flower" + $('body').data('flowercount')).css({
                         'background': 'transparent url(final_flower.png) 0 0 no-repeat',
-                      //  'position': 'absolute',
-                        'top': '250px',
+                        'bottom': '10px',
 						'left': '100px',
                         'float': 'left',
 						'width': '100px',
 						'height': '100px',
-                        'margin-left': -50 + 'px'
+                        'margin-left': -50 + 'px',
+						'margin-top': -40 + 'px'
                     });
 					$('body').data('flowercount', $('body').data('flowercount')+1);
-                    $("body").append(test        /*$("<div></div>")
-                     .addClass("flower")
-                     .css({"float": "left", "marginLeft": -80+"px", "top":250+"px", "position":"relative"})*/
-                    );
+                    $("#bottomBar").append(test);
 					test.sprite({
-                        fps: 3,
+                        fps: 6,
                         no_of_frames: 5,
 						play_frames: 5
                     }).spState(Math.floor(Math.random()*9));
                 });
-				
-				var test = $('#flower').css({
-                        'background': 'red url(final_flower.png) 0 0 no-repeat',
-                      //  'position': 'absolute',
-                       'top': '250px',
-                       'width': '100px',
-						'height': '100px'
-                        // "margin-left": -80 + "px"
-                    });
-					test.sprite({
-                        fps: 3,
-                        no_of_frames: 5
-                    }).spState(7);
             });
         </script>
     </head>
     <body>
-        <h1>Hello World</h1>
-        <div class="flower" style="
- position: absolute;
- left: 150px;
- top: 300px;">
-        </div>
+        <h1>Hello Lecture</h1>
         <div id="upButton">
         </div>
-        <script>
-        </script>
+		<div id="bottomBar"></div>
     </body>
 </html>
