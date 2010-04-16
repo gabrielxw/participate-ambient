@@ -9,8 +9,8 @@
         </script>
         <style type="text/css">
             body {
-            	height: 100%;
-				overflow: hidden;
+                height: 100%;
+                overflow: hidden;
             }
             
             #upButton {
@@ -20,54 +20,64 @@
                 height: 90px;
                 background: transparent url(trial_up.png) top right no-repeat;
             }
-			#bottomBar {
-				width: 100%;
-				height: 100px;
-				margin-left: 50px;
-				position: absolute;
-				bottom: 0;
-			}
+            
+            #bottomBar {
+                width: 100%;
+                height: 100px;
+                margin-left: 50px;
+                position: absolute;
+                bottom: 0;
+            }
         </style>
         <script type="text/javascript">
             
-            
             $(function(){
-			window.nativeWindow.alwaysInFront = true; //makes window in front
-            //window.nativeWindow.maximize();
-			window.nativeWindow.stage.displayState = runtime.flash.display.StageDisplayState.FULL_SCREEN;
+                window.nativeWindow.alwaysInFront = true;
+                window.nativeWindow.stage.displayState = runtime.flash.display.StageDisplayState.FULL_SCREEN;
                 $('.flower').sprite({
                     fps: 12,
                     no_of_frames: 2
                 }).active().activeOnClick();
                 
-				$('body').data('flowercount', 0);
+                $('body').data('flowercount', 0);
+				$('body').data('studentflowerid', 0);
+                $('body').data('flowerType', 0);
 				
                 $('#upButton').click(function(){
-					var test = $('<div></div>').attr("id", "flower" + $('body').data('flowercount')).css({
-                        'background': 'transparent url(final_flower.png) 0 0 no-repeat',
+					$('body').data('studentflowerid', Math.floor(Math.random()*9));// We randomised the studentflowerid, by right, should get the student's flower.
+					$('body').data('flowerType', Math.floor(Math.random()*2));
+					
+					switch($('body').data('flowerType')){
+						case 0:var flowerImage = 'final_flower.png'; break;
+						case 1:var flowerImage = 'final_flower_test.png'; break;
+					}
+					
+                    var test = $('<div></div>').attr("id", "flower" + $('body').data('flowercount')).css({
+                        'background': 'transparent url('+flowerImage+') 0 0 no-repeat',
                         'bottom': '10px',
-						'left': '100px',
+                        'left': '100px',
                         'float': 'left',
-						'width': '100px',
-						'height': '100px',
+                        'width': '100px',
+                        'height': '100px',
                         'margin-left': -50 + 'px',
-						'margin-top': -40 + 'px'
+                        'margin-top': -40 + 'px'
                     });
-					$('body').data('flowercount', $('body').data('flowercount')+1);
+                    $('body').data('flowercount', $('body').data('flowercount') + 1);
                     $("#bottomBar").append(test);
-					test.sprite({
+                    test.sprite({
                         fps: 6,
                         no_of_frames: 5,
-						play_frames: 5
-                    }).spState(Math.floor(Math.random()*9));
+                        play_frames: 5
+                    }).spState($('body').data('studentflowerid'));  //randomly generate the flowers
                 });
             });
         </script>
     </head>
     <body>
-        <h1>Hello Lecture</h1>
+        <h1>Hello World</h1>
         <div id="upButton">
         </div>
-		<div id="bottomBar"></div>
+        <div id="bottomBar">
+        </div>
     </body>
 </html>
