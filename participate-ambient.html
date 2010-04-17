@@ -81,6 +81,26 @@
                         play_frames: 5
                     }).spState(flowerType);
 				}
+				$('body').data('classId', 'lEywaOpJ3xGayaSmOZBjLA');
+				//keep polling
+				setInterval(function() {
+					air.trace("polling again");
+					// watch out for caching bugs
+					// $.getJSON('http://participate-android.smart.joyent.com/pclasspart/' + $('body').data('classId'),
+					$.ajax({
+						url: 'http://participate-android.smart.joyent.com/pclasspart/' + $('body').data('classId'),
+						dataType: 'json',
+						cache: false,
+						success: function(data){
+							for (var i in data) {
+								if ($("#" + data[i].id).length == 0) {
+									makeFlower(Math.floor(Math.random() * 9), data[i].rating >= 5 ? 1 : 0, data[i].id);
+								}
+							}
+							air.trace(data);
+						}
+					});
+				}, 5000); // every 5 seconds
             });
         </script>
     </head>
