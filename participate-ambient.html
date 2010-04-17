@@ -94,7 +94,10 @@
 						success: function(data){
 							for (var i in data) {
 								if ($("#" + data[i].id).length == 0) {
-									makeFlower(Math.floor(Math.random() * 9), data[i].rating >= 5 ? 1 : 0, data[i].id);
+									makeFlower(
+									Math.floor(Math.random() * 9), 
+									data[i].rating >= 5 ? 0 : 1, // if more than 5 ratings, big flower
+									data[i].id);
 								}
 							}
 							air.trace(data);
