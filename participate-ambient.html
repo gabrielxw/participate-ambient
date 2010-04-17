@@ -44,15 +44,27 @@
                 $('body').data('flowerType', 0);
 				
                 $('#upButton').click(function(){
-					$('body').data('studentflowerid', Math.floor(Math.random()*9));// We randomised the studentflowerid, by right, should get the student's flower.
-					$('body').data('flowerType', Math.floor(Math.random()*2));
-					
-					switch($('body').data('flowerType')){
+					// We randomised the studentflowerid, by right, should get the student's flower.
+					makeFlower(Math.floor(Math.random() * 9),
+							   Math.floor(Math.random() * 2),
+							   "flower" + $('body').data('flowercount'));
+                    $('body').data('flowercount', $('body').data('flowercount') + 1);
+				});
+
+				/**
+				 * Make a flower appear!
+				 * @param {Object} flowerType
+				 * 						The colour of the flower/different flowers
+				 * @param {Object} flowerSize
+				 * 						Size/whatever of flowers based on the rating
+				 */
+				function makeFlower(flowerType, flowerSize, flowerId) {
+					switch(flowerSize){
 						case 0:var flowerImage = 'final_flower.png'; break;
 						case 1:var flowerImage = 'final_flower_test.png'; break;
 					}
 					
-                    var test = $('<div></div>').attr("id", "flower" + $('body').data('flowercount')).css({
+                    var test = $('<div></div>').attr("id", flowerId).css({
                         'background': 'transparent url('+flowerImage+') 0 0 no-repeat',
                         'bottom': '10px',
                         'left': '100px',
@@ -62,14 +74,13 @@
                         'margin-left': -50 + 'px',
                         'margin-top': -40 + 'px'
                     });
-                    $('body').data('flowercount', $('body').data('flowercount') + 1);
                     $("#bottomBar").append(test);
                     test.sprite({
                         fps: 6,
                         no_of_frames: 5,
                         play_frames: 5
-                    }).spState($('body').data('studentflowerid'));  //randomly generate the flowers
-                });
+                    }).spState(flowerType);
+				}
             });
         </script>
     </head>
