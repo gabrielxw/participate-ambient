@@ -54,48 +54,6 @@
                     $('body').data('flowercount', $('body').data('flowercount') + 1);
 				});
 
-				/**
-				 * Make a flower appear!
-				 * @param {Object} flowerType
-				 * 						The colour of the flower/different flowers
-				 * @param {Object} flowerSize
-				 * 						Size/whatever of flowers based on the rating
-				 */
-				function makeFlower(flowerType, flowerSize, flowerId) {
-					// TODO update the flower when the rating has changed in a nice animation
-
-					// remove the flower if it already exists. This is the way for updating for now
-					if ($("#" + flowerId).length) {
-						$("#" + flowerId).spStop(true);
-						air.trace($._spritely.instances[flowerId]);
-						delete $._spritely.instances[flowerId];
-						air.trace("deleted" + $._spritely.instances[flowerId]);
-						$("#" + flowerId).remove();
-					}
-
-					switch(flowerSize){ // larger the number, the better
-						case 0:var flowerImage = 'final_flower_test.png'; break;
-						case 1:var flowerImage = 'final_flower.png'; break;
-					}
-
-					// flower generation
-                    $('<div></div>').attr("id", flowerId).css({
-                        'background': 'transparent url(flowers.png) 0 0 no-repeat',
-                        'bottom': '10px',
-                        'left': '100px',
-                        'float': 'left',
-                        'width': '100px',
-                        'height': '100px',
-                        'margin-left': -50 + 'px',
-                        'margin-top': -40 + 'px'
-                    }).data({'flowerType': flowerType, 'flowerSize': flowerSize})
-					.appendTo("#bottomBar")
-					.sprite({
-                        fps: 6,
-                        no_of_frames: (flowerSize ? 15 : 5),
-                        do_once: true
-                    }).spState(flowerType);;
-				}
 				// Ask for the class
 				var askDialog = $('<div id="myDialog"></div>')
 				.attr("title", "Please enter the current class")
@@ -111,7 +69,7 @@
 						Okay: function(){
 							// set it to default if it is blank / actually 0 is default but whatever.
 							if($("#classTitle").val() == "") {
-								$("#classTitle").val("DEMO Class");
+								$("#classTitle").val("0");
 							};
 							$.getJSON("http://participate-android.smart.joyent.com/getClassIdFromTitle/",
 									$("input", this).serialize(), function(data){
@@ -138,7 +96,6 @@
 										cache: false,
 										type: 'POST',
 										success: function(data){
-											air.trace("polling");
 											var currentSize;
 											var flowerIdSelector;
 											for (var i in data) {
@@ -149,35 +106,92 @@
 												} else {
 													currentSize = 0;
 												}
-												flowerIdSelector = "#" + data[i].id;
+												flowerIdSelector = "#" + data[i].pid;
 
 												// If the flower isn't there already
 												if ($(flowerIdSelector).length == 0) {
 													// make the flower!
 													makeFlower(Math.floor(Math.random() * 9),
-														currentSize, // if more than 5 ratings, big flower
- 														data[i].id);
+														currentSize,
+ 														data[i].pid);
 												} else {
-													var flower = $(flowerIdSelector);
 													// recreate the flower if the size is different
-													if(flower.data("flowerSize") != currentSize) {
-														makeFlower(flower.data("flowerType"),
+														makeFlower(null,
 															currentSize,
-															data[i].id);
-													}
+															data[i].pid);
 												}
 											}
-										// air.trace(data);
+										// console.log(data);
 										}
 									});
 									//start the polling every 8 seconds
-									window.setTimeout(pollingFunc, 8000);
+									window.setTimeout(pollingFunc, 10000);
 								})();
 							});
 						}
 					}
 				});
             });
+			function engageBridge() {
+				document.getElementById("child").contentWindow.parentSandboxBridge = {
+					processFlower : function (flowerId, flowerRating, flowerClassId) {
+						// check whether it's from the right class (as backend implementation is not optimal)
+						if (flowerClassId != $('body').data("classId")) {
+							return;
+						}
+						var currentSize;
+						if (flowerRating >= 1) { // 1 is our threshold for demo purposes (only 1 rating needed)
+									// bigger for better
+							currentSize = 1;
+						} else {
+							currentSize = 0;
+						}
+
+						makeFlower(Math.floor(Math.random() * 9),
+								currentSize, // if more than 5 ratings, big flower
+								flowerId);
+					}
+				}
+			}
+
+			/**
+			 * Make a flower appear!
+			 * @param {Object} flowerType
+			 * 						The colour of the flower/different flowers
+			 * @param {Object} flowerSize
+			 * 						Size/whatever of flowers based on the rating
+			 */
+			function makeFlower(flowerType, flowerSize, flowerId) {
+				// TODO update the flower when the rating has changed in a nice animation
+
+				// remove the flower if it already exists. This is the way for updating for now
+				if ($("#" + flowerId).length) {
+					flowerType = $("#" + flowerId).data("flowerType");
+					// same size, do nothing
+					if (flowerSize == $("#" + flowerId).data("flowerSize"))
+						return;
+					$("#" + flowerId).spStop(true);
+					delete $._spritely.instances[flowerId];
+					$("#" + flowerId).remove();
+				}
+				// flower generation
+                $('<div></div>').attr("id", flowerId).css({
+                    'background': 'transparent url(flowers.png) 0 0 no-repeat',
+                    'bottom': '10px',
+                    'left': '100px',
+                    'float': 'left',
+                    'width': '100px',
+                    'height': '100px',
+                    'margin-left': -50 + 'px',
+                    'margin-top': -40 + 'px'
+                }).data({'flowerType': flowerType, 'flowerSize': flowerSize})
+				.appendTo("#bottomBar")
+				.sprite({
+                    fps: 6,
+                    no_of_frames: (flowerSize ? 15 : 5),
+                    do_once: true
+                }).spState(flowerType);
+			}
         </script>
     </head>
     <body>
@@ -185,6 +199,8 @@
         <div id="upButton">
         </div>
 		-->
+		<iframe id="child" src="comet.html" sandboxRoot="http://participate.vorce.net/" documentRoot="app:/"
+		ondominitialize="engageBridge()" style="display:none"></iframe>
         <div id="bottomBar">
         </div>
     </body>

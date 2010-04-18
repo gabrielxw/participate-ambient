@@ -1,0 +1,73 @@
+<html>
+	<head>
+		<script type="text/javascript" src="lib/dojo/dojo.js" djConfig="isDebug:false, parseOnLoad: true"></script>
+		<script type="text/javascript">
+		dojo.require("dojox.data.PersevereStore");
+		dojo.require("dojox.cometd.HttpChannels");
+		dojo.require("dojox.grid.DataGrid");
+		dojo.require("dojo.parser");
+		</script>
+		<script>
+		var plainXhr = dojo.xhr;
+		var currentRequests = 0;
+				dojo.xhr = function(method,args,hasBody) {
+			if(!args.noStatus){
+				currentRequests++;
+				var statusElement = dojo.byId("status");
+				if(statusElement){
+					dojo.style(statusElement,"display","block");
+					dojo.style(dojo.body(),"cursor","progress");
+					statusElement.innerHTML = method == "GET" ? "Loading" : "Processing";
+				}
+				function done(res) {
+					if(!--currentRequests){
+						if(statusElement){
+							dojo.style(statusElement,"display","none");
+							dojo.style(dojo.body(),"cursor","auto");
+						}
+					}
+					return res;
+				}
+				try {
+					var dfd = plainXhr(method,args,hasBody);
+					dfd.addBoth(done);
+				}
+				catch(e){
+					console.log(e);
+					done();
+				}
+			}else{
+				dfd = plainXhr(method,args,hasBody);
+			}			
+			return dfd;
+		}
+				dojox.data.PersevereStore.getStores('http://participate.vorce.net:9090/'). // persevere stores are auto-generated
+				addCallback(function(persevereStores){
+				dojo.addOnLoad(function(){
+					psessionstore = persevereStores.Psession;
+					grid.setStore(psessionstore);
+					dojo.connect(psessionstore, "onNew", function(item) {
+						// send back to the parent
+					  window.parentSandboxBridge.processFlower(
+					  	psessionstore.getValue(item, "pid"), 
+						psessionstore.getValue(item, "rating"),
+						psessionstore.getValue(item, "classId"));
+					});
+				});
+			});
+		new dojox.cometd.HttpChannels({autoSubscribeRoot:'http://participate.vorce.net:9090/',url:'http://participate.vorce.net:9090/channels'});
+		</script>
+	</head>
+	<body>
+	<table dojoType="dojox.grid.DataGrid"
+		jsid="grid" id="grid" 
+		query="''" rowsPerPage="20" rowSelector="20px" style="display:none">
+		<thead>
+			<tr>
+				<th field="pid" width="300px" editable="false">a</th>
+				<th field="rating" width="auto" editable="false">b</th>
+			</tr>
+		</thead>
+	</table>
+	</body>
+</html>
