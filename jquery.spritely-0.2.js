@@ -29,33 +29,22 @@
 			var el = $(options.el);
 			var el_id = el.attr('id');
 			options = $.extend(options, $._spritely.instances[el_id] || {});
+			if (options.do_once && !options.play_frames) options.play_frames = options.no_of_frames;
 			if (options.play_frames && !$._spritely.instances[el_id]['remaining_frames']) {
 				$._spritely.instances[el_id]['remaining_frames'] = options.play_frames + 1;
 			}
 			if (options.type == 'sprite' && options.fps) {
 				var frames;
 				var animate = function(el) {
-					var w = options.width, h = options.height, x = 0;
-
+					var w = options.width, h = options.height;
 					if (!frames) {
 						frames = [];
 						total = 0
 						for (var i = 0; i < options.no_of_frames; i ++) {
 							frames[frames.length] = (0 - total);
 							total += w;
-							x=i;
-							if(x == (options.no_of_frames-1)){
-					  			frames[frames.length] = (0 - (w*4));
-								x=10
-								break;
-
-							}
 						}
-					  
-				
-					
 					}
-	
 					if ($._spritely.instances[el_id]['current_frame'] >= frames.length - 1) {
 						$._spritely.instances[el_id]['current_frame'] = 0;
 					} else {
@@ -78,10 +67,9 @@
 						$._spritely.instances[el_id]['remaining_frames'] = -1;
 					} else {
 						animate(el);
-					
 					}
 				} else if ($._spritely.instances[el_id]['remaining_frames'] != -1) {
-					animate(el); 
+					animate(el);
 				}
 			} else if (options.type == 'pan') {
 				if (!$._spritely.instances[el_id]['_stopped']) {
