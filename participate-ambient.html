@@ -77,9 +77,10 @@
 						case 0:var flowerImage = 'final_flower_test.png'; break;
 						case 1:var flowerImage = 'final_flower.png'; break;
 					}
-					
-                    var test = $('<div></div>').attr("id", flowerId).css({
-                        'background': 'transparent url('+flowerImage+') 0 0 no-repeat',
+
+					// flower generation
+                    $('<div></div>').attr("id", flowerId).css({
+                        'background': 'transparent url(flowers.png) 0 0 no-repeat',
                         'bottom': '10px',
                         'left': '100px',
                         'float': 'left',
@@ -87,13 +88,13 @@
                         'height': '100px',
                         'margin-left': -50 + 'px',
                         'margin-top': -40 + 'px'
-                    }).data({'flowerType': flowerType, 'flowerSize': flowerSize});
-                    $("#bottomBar").append(test);
-                    test.sprite({
+                    }).data({'flowerType': flowerType, 'flowerSize': flowerSize})
+					.appendTo("#bottomBar")
+					.sprite({
                         fps: 6,
-                        no_of_frames: 5,
+                        no_of_frames: (flowerSize ? 15 : 5),
                         do_once: true
-                    }).spState(flowerType);
+                    }).spState(flowerType);;
 				}
 				// Ask for the class
 				var askDialog = $('<div id="myDialog"></div>')
@@ -169,8 +170,8 @@
 										// air.trace(data);
 										}
 									});
-									//start the polling every 5 seconds
-									window.setTimeout(pollingFunc, 5000);
+									//start the polling every 8 seconds
+									window.setTimeout(pollingFunc, 8000);
 								})();
 							});
 						}
