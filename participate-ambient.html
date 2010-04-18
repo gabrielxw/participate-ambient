@@ -1,16 +1,20 @@
 <html>
     <head>
-        <title>New Adobe AIR Project</title>
+        <title>participate-ambient</title>
         <script type="text/javascript" src="lib/air/AIRAliases.js">
         </script>
         <script type="text/javascript" src="jquery-1.4.2.min.js">
         </script>
         <script type="text/javascript" src="jquery.spritely-0.2.js">
         </script>
+		<link type="text/css" href="css/smoothness/jquery-ui-1.8.custom.css" rel="stylesheet" />	
+		<script type="text/javascript" src="jquery-ui-1.8.custom.min.js"></script>
+
         <style type="text/css">
             body {
                 height: 100%;
                 overflow: hidden;
+				font-size: .8em;
             }
             
             #upButton {
@@ -30,10 +34,7 @@
             }
         </style>
         <script type="text/javascript">
-            
             $(function(){
-                window.nativeWindow.alwaysInFront = true;
-                window.nativeWindow.stage.displayState = runtime.flash.display.StageDisplayState.FULL_SCREEN;
                 $('.flower').sprite({
                     fps: 12,
                     no_of_frames: 2
@@ -81,36 +82,71 @@
                         play_frames: 5
                     }).spState(flowerType);
 				}
-				$('body').data('classId', 'lEywaOpJ3xGayaSmOZBjLA');
-				//keep polling
-				setInterval(function() {
-					air.trace("polling again");
-					// watch out for caching bugs
-					// $.getJSON('http://participate-android.smart.joyent.com/pclasspart/' + $('body').data('classId'),
-					$.ajax({
-						url: 'http://participate-android.smart.joyent.com/pclasspart/' + $('body').data('classId'),
-						dataType: 'json',
-						cache: false,
-						success: function(data){
-							for (var i in data) {
-								if ($("#" + data[i].id).length == 0) {
-									makeFlower(
-									Math.floor(Math.random() * 9), 
-									data[i].rating >= 5 ? 0 : 1, // if more than 5 ratings, big flower
-									data[i].id);
+				// Ask for the class
+				var askDialog = $('<div id="myDialog"></div>')
+				.attr("title", "Please enter the current class")
+				.append($('<input type="text" id="classTitle" name="classTitle" placeholder="DEMO Class" />'))
+				.dialog({
+					resizeable: false,
+					// allow dragging of the whole application window
+					dragStart: function(event, ui){
+						window.nativeWindow.startMove();
+					},
+					close: function (){if($('body').data('classId') == null) window.nativeWindow.close();},
+					buttons: {
+						Okay: function(){
+							// set it to default if it is blank / actually 0 is default but whatever.
+							if($("#classTitle").val() == "") {
+								$("#classTitle").val("DEMO Class");
+							};
+							$.getJSON("http://participate-android.smart.joyent.com/getClassIdFromTitle/",
+									$("input", this).serialize(), function(data){
+								if (data['ok'] == true) {
+									$('body').data('classId', data['classId']);
 								}
-							}
-							air.trace(data);
+								else {
+									// set it to exactly what the user typed. in case he already typed the id
+									$('body').data('classId', $("#classTitle").val());
+								}
+								// close the dialog box because we got our input
+
+								$("#myDialog").dialog("close");
+								// No need any more interaction. So full screen/transparent now.
+								window.nativeWindow.alwaysInFront = true;
+								window.nativeWindow.stage.displayState = runtime.flash.display.StageDisplayState.FULL_SCREEN;
+
+								//start the polling
+								setInterval(function(){
+									// watch out for caching bugs
+									// $.getJSON('http://participate-android.smart.joyent.com/pclasspart/' + $('body').data('classId'),
+									$.ajax({
+										url: 'http://participate-android.smart.joyent.com/pclasspart/' + $('body').data('classId'),
+										dataType: 'json',
+										cache: false,
+										success: function(data){
+											for (var i in data) {
+												if ($("#" + data[i].id).length == 0) {
+													makeFlower(Math.floor(Math.random() * 9), data[i].rating >= 5 ? 0 : 1, // if more than 5 ratings, big flower
+ data[i].id);
+												}
+											}
+										// air.trace(data);
+										}
+									});
+								}, 5000); // every 5 seconds
+							});
+						// $('body').data('classId', 'lEywaOpJ3xGayaSmOZBjLA');
 						}
-					});
-				}, 5000); // every 5 seconds
+					}
+				});
             });
         </script>
     </head>
     <body>
-        <h1>Hello World</h1>
+    	<!--
         <div id="upButton">
         </div>
+		-->
         <div id="bottomBar">
         </div>
     </body>
