@@ -5,7 +5,7 @@
         </script>
         <script type="text/javascript" src="jquery-1.4.2.min.js">
         </script>
-        <script type="text/javascript" src="jquery.spritely-0.2.js">
+        <script type="text/javascript" src="jquery.spritely-0.2.1.js">
         </script>
 		<link type="text/css" href="css/smoothness/jquery-ui-1.8.custom.css" rel="stylesheet" />	
 		<script type="text/javascript" src="jquery-ui-1.8.custom.min.js"></script>
@@ -35,10 +35,12 @@
         </style>
         <script type="text/javascript">
             $(function(){
+				/*
                 $('.flower').sprite({
                     fps: 12,
                     no_of_frames: 2
                 }).active().activeOnClick();
+                */
                 
                 $('body').data('flowercount', 0);
 				$('body').data('studentflowerid', 0);
@@ -60,9 +62,20 @@
 				 * 						Size/whatever of flowers based on the rating
 				 */
 				function makeFlower(flowerType, flowerSize, flowerId) {
-					switch(flowerSize){
-						case 0:var flowerImage = 'final_flower.png'; break;
-						case 1:var flowerImage = 'final_flower_test.png'; break;
+					// TODO update the flower when the rating has changed in a nice animation
+
+					// remove the flower if it already exists. This is the way for updating for now
+					if ($("#" + flowerId).length) {
+						$("#" + flowerId).spStop(true);
+						air.trace($._spritely.instances[flowerId]);
+						delete $._spritely.instances[flowerId];
+						air.trace("deleted" + $._spritely.instances[flowerId]);
+						$("#" + flowerId).remove();
+					}
+
+					switch(flowerSize){ // larger the number, the better
+						case 0:var flowerImage = 'final_flower_test.png'; break;
+						case 1:var flowerImage = 'final_flower.png'; break;
 					}
 					
                     var test = $('<div></div>').attr("id", flowerId).css({
@@ -74,12 +87,12 @@
                         'height': '100px',
                         'margin-left': -50 + 'px',
                         'margin-top': -40 + 'px'
-                    });
+                    }).data({'flowerType': flowerType, 'flowerSize': flowerSize});
                     $("#bottomBar").append(test);
                     test.sprite({
                         fps: 6,
                         no_of_frames: 5,
-                        play_frames: 5
+                        do_once: true
                     }).spState(flowerType);
 				}
 				// Ask for the class
@@ -115,27 +128,51 @@
 								window.nativeWindow.alwaysInFront = true;
 								window.nativeWindow.stage.displayState = runtime.flash.display.StageDisplayState.FULL_SCREEN;
 
-								//start the polling
-								setInterval(function(){
+								(function pollingFunc(){
 									// watch out for caching bugs
 									// $.getJSON('http://participate-android.smart.joyent.com/pclasspart/' + $('body').data('classId'),
 									$.ajax({
 										url: 'http://participate-android.smart.joyent.com/pclasspart/' + $('body').data('classId'),
 										dataType: 'json',
 										cache: false,
+										type: 'POST',
 										success: function(data){
+											air.trace("polling");
+											var currentSize;
+											var flowerIdSelector;
 											for (var i in data) {
-												if ($("#" + data[i].id).length == 0) {
-													makeFlower(Math.floor(Math.random() * 9), data[i].rating >= 5 ? 0 : 1, // if more than 5 ratings, big flower
- data[i].id);
+												// find out the size of the flower from the rating points
+												if (data[i].rating >= 1) { // 1 is our threshold for demo purposes (only 1 rating needed)
+													// bigger for better
+													currentSize = 1;
+												} else {
+													currentSize = 0;
+												}
+												flowerIdSelector = "#" + data[i].id;
+
+												// If the flower isn't there already
+												if ($(flowerIdSelector).length == 0) {
+													// make the flower!
+													makeFlower(Math.floor(Math.random() * 9),
+														currentSize, // if more than 5 ratings, big flower
+ 														data[i].id);
+												} else {
+													var flower = $(flowerIdSelector);
+													// recreate the flower if the size is different
+													if(flower.data("flowerSize") != currentSize) {
+														makeFlower(flower.data("flowerType"),
+															currentSize,
+															data[i].id);
+													}
 												}
 											}
 										// air.trace(data);
 										}
 									});
-								}, 5000); // every 5 seconds
+									//start the polling every 5 seconds
+									window.setTimeout(pollingFunc, 5000);
+								})();
 							});
-						// $('body').data('classId', 'lEywaOpJ3xGayaSmOZBjLA');
 						}
 					}
 				});

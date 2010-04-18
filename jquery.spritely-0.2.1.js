@@ -1,5 +1,5 @@
 /*
- * jQuery spritely 0.2 beta
+ * jQuery spritely 0.2.1
  * http://spritely.net/
  *
  * Documentation:
@@ -9,7 +9,9 @@
  * Dual licensed under the MIT or GPL Version 2 licenses.
  *
  * Change history:
- * Version 0.2 beta
+ * Version 0.2.1
+ *   - animate function will stop cycling after play_frames has completed
+ * Version 0.2
  *   - added isDraggable method (requires jquery-ui) $('#sprite').sprite().isDraggable({start: null, stop: function() {alert('Ouch! You dropped me!')});
  *   - sprites may be set to play a limited number of frames when instantiated, e.g. $('#sprite').sprite({fps: 9, no_of_frames: 3, play_frames: 30})
  *   - sprite speed may be controlled at any point by setting the frames-per-second $('#sprite').fps(20);
@@ -65,6 +67,8 @@
 					$._spritely.instances[el_id]['remaining_frames'] --;
 					if ($._spritely.instances[el_id]['remaining_frames'] == 0) {
 						$._spritely.instances[el_id]['remaining_frames'] = -1;
+						delete $._spritely.instances[el_id]['remaining_frames'];
+						return;
 					} else {
 						animate(el);
 					}
