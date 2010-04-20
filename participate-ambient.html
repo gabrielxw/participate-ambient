@@ -17,14 +17,6 @@
 				font-size: .8em;
             }
             
-            #upButton {
-                position: absolute;
-                left: 900px;
-                width: 90px;
-                height: 90px;
-                background: transparent url(trial_up.png) top right no-repeat;
-            }
-            
             #bottomBar {
                 width: 100%;
                 height: 100px;
@@ -35,24 +27,6 @@
         </style>
         <script type="text/javascript">
             $(function(){
-				/*
-                $('.flower').sprite({
-                    fps: 12,
-                    no_of_frames: 2
-                }).active().activeOnClick();
-                */
-                
-                $('body').data('flowercount', 0);
-				$('body').data('studentflowerid', 0);
-                $('body').data('flowerType', 0);
-				
-                $('#upButton').click(function(){
-					// We randomised the studentflowerid, by right, should get the student's flower.
-					makeFlower(Math.floor(Math.random() * 9),
-							   Math.floor(Math.random() * 2),
-							   "flower" + $('body').data('flowercount'));
-                    $('body').data('flowercount', $('body').data('flowercount') + 1);
-				});
 
 				// Ask for the class
 				var askDialog = $('<div id="myDialog"></div>')
@@ -68,11 +42,12 @@
 					buttons: {
 						Okay: function(){
 							// set it to default if it is blank / actually 0 is default but whatever.
-							if($("#classTitle").val() == "") {
-								$("#classTitle").val("0");
-							};
+							var classTitle = $("#classTitle").val();
+							if(classTitle == "") {
+								classTitle = "0";
+							}
 							$.getJSON("http://participate-android.smart.joyent.com/getClassIdFromTitle/",
-									$("input", this).serialize(), function(data){
+									{'classTitle': classTitle}, function(data){
 								if (data['ok'] == true) {
 									$('body').data('classId', data['classId']);
 								}
@@ -81,11 +56,17 @@
 									$('body').data('classId', $("#classTitle").val());
 								}
 								// close the dialog box because we got our input
+								
 
 								$("#myDialog").dialog("close");
 								// No need any more interaction. So full screen/transparent now.
 								window.nativeWindow.alwaysInFront = true;
-								window.nativeWindow.stage.displayState = runtime.flash.display.StageDisplayState.FULL_SCREEN;
+								window.nativeWindow.stage.displayState = runtime.flash.display.StageDisplayState.FULL_SCREEN_INTERACTIVE;
+								
+								// Add in the background image now
+								$("#bottomBar").css({
+				                    'background':'transparent url(grass.png) 0 0 repeat-x',
+				                });
 
 								(function pollingFunc(){
 									// watch out for caching bugs
@@ -162,8 +143,6 @@
 			 * 						Size/whatever of flowers based on the rating
 			 */
 			function makeFlower(flowerType, flowerSize, flowerId) {
-				// TODO update the flower when the rating has changed in a nice animation
-
 				// remove the flower if it already exists. This is the way for updating for now
 				if ($("#" + flowerId).length) {
 					flowerType = $("#" + flowerId).data("flowerType");
@@ -192,13 +171,20 @@
                     do_once: true
                 }).spState(flowerType);
 			}
+		//Object exit confirmation
+		var exitConfirmation = $('<div id="exitConfirmation"></div>')
+			.attr("title","Adobe Air-Participate")
+			.append('Confirm exiting the program?');
+
+		//Keypress event to close the window
+		$(window).keypress(function(event) {
+			  if (event.keyCode == '113') {
+					exitConfirmation.dialog();
+			   }
+			});
         </script>
     </head>
     <body>
-    	<!--
-        <div id="upButton">
-        </div>
-		-->
 		<iframe id="child" src="comet.html" sandboxRoot="http://participate.vorce.net/" documentRoot="app:/"
 		ondominitialize="engageBridge()" style="display:none"></iframe>
         <div id="bottomBar">
