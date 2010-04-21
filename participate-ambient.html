@@ -30,8 +30,8 @@
 
 				// Ask for the class
 				var askDialog = $('<div id="myDialog"></div>')
-				.attr("title", "Please enter the current class")
-				.append($('<input type="text" id="classTitle" name="classTitle" placeholder="DEMO Class" />'))
+				.attr("title", "Adobe Air-Participate!")
+				.append('</br>Please enter the current class.</br>',$('<input type="text" id="classTitle" name="classTitle" placeholder="DEMO Class" />'),'</br></br>Press "q" to quit the program when done.</br></br>')
 				.dialog({
 					resizeable: false,
 					// allow dragging of the whole application window
@@ -67,6 +67,18 @@
 								$("#bottomBar").css({
 				                    'background':'transparent url(grass.png) 0 0 repeat-x',
 				                });
+								
+								// Add in the Keypress event to quit program pressing 'q' now
+								$(window).keypress(function(event) {
+									  if (event.keyCode == '113') {
+											exitConfirmation.dialog(
+												{buttons: {
+													Cancel: function(){$(this).dialog("close");},
+													Okay: function(){window.close();}}
+												}
+											);
+									   }
+									});
 
 								(function pollingFunc(){
 									// watch out for caching bugs
@@ -173,15 +185,9 @@
 			}
 		//Object exit confirmation
 		var exitConfirmation = $('<div id="exitConfirmation"></div>')
-			.attr("title","Adobe Air-Participate")
+			.attr("title","Adobe Air-Participate!")
 			.append('Confirm exiting the program?');
-
-		//Keypress event to close the window
-		$(window).keypress(function(event) {
-			  if (event.keyCode == '113') {
-					exitConfirmation.dialog();
-			   }
-			});
+			
         </script>
     </head>
     <body>
