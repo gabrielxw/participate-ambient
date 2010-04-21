@@ -16,11 +16,16 @@
                 overflow: hidden;
 				font-size: .8em;
             }
-            
-            #bottomBar {
+			#bottomBar {
                 width: 100%;
                 height: 100px;
-                margin-left: 50px;
+                position: absolute;
+                bottom: 0;
+            }
+			#flowerBox{
+                width: 100%;
+                height: 100px;
+                margin-left: 40px;
                 position: absolute;
                 bottom: 0;
             }
@@ -31,7 +36,7 @@
 				// Ask for the class
 				var askDialog = $('<div id="myDialog"></div>')
 				.attr("title", "Adobe Air-Participate!")
-				.append('</br>Please enter the current class.</br>',$('<input type="text" id="classTitle" name="classTitle" placeholder="DEMO Class" />'),'</br></br>Press "q" to quit the program when done.</br></br>')
+				.append('</br>Please enter the current class.</br>',$('<input type="text" id="classTitle" name="classTitle" placeholder="DEMO Class" />'),'</br></br>Select the program from the taskbar and press "q" to quit when done.</br></br>')
 				.dialog({
 					resizeable: false,
 					// allow dragging of the whole application window
@@ -65,7 +70,7 @@
 								
 								// Add in the background image now
 								$("#bottomBar").css({
-				                    'background':'transparent url(grass.png) 0 0 repeat-x',
+				                    'background':'transparent url(grass.png) 0 0 repeat',
 				                });
 								
 								// Add in the Keypress event to quit program pressing 'q' now
@@ -176,7 +181,7 @@
                     'margin-left': -50 + 'px',
                     'margin-top': -40 + 'px'
                 }).data({'flowerType': flowerType, 'flowerSize': flowerSize})
-				.appendTo("#bottomBar")
+				.appendTo("#flowerBox")
 				.sprite({
                     fps: 6,
                     no_of_frames: (flowerSize ? 15 : 5),
@@ -186,14 +191,17 @@
 		//Object exit confirmation
 		var exitConfirmation = $('<div id="exitConfirmation"></div>')
 			.attr("title","Adobe Air-Participate!")
-			.append('Confirm exiting the program?');
+			.append('Confirm quiting the program?');
 			
         </script>
     </head>
     <body>
 		<iframe id="child" src="comet.html" sandboxRoot="http://participate.vorce.net/" documentRoot="app:/"
 		ondominitialize="engageBridge()" style="display:none"></iframe>
-        <div id="bottomBar">
+		<div id="bottomBar">
         </div>
+		<div id="flowerBox">
+        </div>
+        
     </body>
 </html>
