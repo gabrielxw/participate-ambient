@@ -35,8 +35,11 @@
 
 				// Ask for the class
 				var askDialog = $('<div id="myDialog"></div>')
-				.attr("title", "Adobe Air-Participate!")
-				.append('</br>Please enter the current class.</br>',$('<input type="text" id="classTitle" name="classTitle" placeholder="DEMO Class" />'),'</br></br>Select the program from the taskbar and press "q" to quit when done.</br></br>')
+				.attr("title", "Participate! Ambient Display")
+				.append('Please enter the current class.<br/>',
+				$('<input type="text" id="classTitle" name="classTitle" placeholder="DEMO Class" />').css({'width': '100%'}),
+				'<hr/>After you click \'Okay\', you may begin your lesson. ' +
+				'Select the program from the system taskbar and press "q" to quit when done.')
 				.dialog({
 					resizeable: false,
 					// allow dragging of the whole application window
@@ -57,8 +60,8 @@
 									$('body').data('classId', data['classId']);
 								}
 								else {
-									// set it to exactly what the user typed. in case he already typed the id
-									$('body').data('classId', $("#classTitle").val());
+									// set it to default
+									$('body').data('classId', "0");
 								}
 								// close the dialog box because we got our input
 								
@@ -124,7 +127,7 @@
 										// console.log(data);
 										}
 									});
-									//start the polling every 8 seconds
+									//start the polling every 10 seconds (backup) it normally relies on comet
 									window.setTimeout(pollingFunc, 10000);
 								})();
 							});
@@ -137,6 +140,7 @@
 					processFlower : function (flowerId, flowerRating, flowerClassId) {
 						// check whether it's from the right class (as backend implementation is not optimal)
 						if (flowerClassId != $('body').data("classId")) {
+							alert($('body').data("classId"))
 							return;
 						}
 						var currentSize;
@@ -192,7 +196,7 @@
 			}
 		//Object exit confirmation
 		var exitConfirmation = $('<div id="exitConfirmation"></div>')
-			.attr("title","Adobe Air-Participate!")
+			.attr("title","Participate! Ambient Display")
 			.append('Confirm quiting the program?');
 			
         </script>
