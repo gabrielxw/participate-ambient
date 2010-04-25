@@ -1,0 +1,13 @@
+Participate! Ambient
+====================
+
+This is our CS3248 project for NUS.
+This requires Adobe AIR 2.0beta to run:
+http://labs.adobe.com/technologies/air2/
+
+The project was developed with Aptana Studio with Adobe AIR 2.0beta support.
+
+This is a combination of three repositories:
+http://github.com/gabrielxw/participate-ambient
+http://github.com/chrisirhc/participate-android
+http://github.com/chrisirhc/participate-android-backend
